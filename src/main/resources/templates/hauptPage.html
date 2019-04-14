@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+<form th:action="@{/logout}" method="post" id="logoutForm">
+    <input type="hidden" name="${_csrf.parameterName}"
+           value="${_csrf.token}"/>
+</form>
+
+<div th:if="${msg!=null}">[[${msg}}]]</div>
+<div th:if="${#request.userPrincipal!=null}">
+    <h2>
+        AccountId: [[${#request.userPrincipal.name}]] | <a href="javascript:formSubmit()">Logout</a>
+    </h2>
+</div>
+<br/>
+<div style="float: right">
+    <textarea id="message" readonly rows="7" cols="17">here're your answers from server</textarea>
+    <br/>
+    <form th:action="@{/sign}" method="get" style="display: none;margin-top: 2%" id="loginForm">
+        <input type="submit" name="submit" value="Регистрация">
+        <input type="hidden" name="${_csrf.parameterName}"
+               value="${_csrf.token}"/>
+    </form>
+</div>
+<input type="text" name="account" id="account" value="your account"/>
+<br/>
+<input type="button" onclick="createAccount()" value="create account" style="margin-top: 0.2%"/>
+<br/>
+<input type="text" name="url" id="url" value="your url" style="margin-top: 0.5%"/>
+<br/>
+<input type="text" name="redirectType" id="redirectType" value="your redirectType" style="margin-top: 0.1%"/>
+<br/>
+
+<input type="button" onclick="createUrl()" value="createUrl"/>
+<form th:if="${#request.userPrincipal!=null}" th:action="'/statistic/'+${#request.userPrincipal.name}" method="get"
+      id="showSt">
+</form>
+<input type="button" onclick="showStatistic()" value="show statistic" style="margin-top: 2%"/>
+<script>
+    document.getElementById("url").onmousedown = function () {
+        checkAuthentification('befor creating url , please login');
+    }
+    var token = $("meta[name='_csrf']").attr("content");
+    var header = $("meta[name='_csrf_header']").attr("content");
+
+    function checkAuthentification(message) {
+        if ([[${#request.userPrincipal==null}]]) {
+            alert(message);
+            document.getElementById('loginForm').style.display = 'block';
+            return false;
+        }
+    }
+
+    function formSubmit() {
+        document.getElementById("logoutForm").submit();
+    }
+
+    function createUrl() {
+        if (isNaN($('#redirectType').val())) {
+            alert('redirectType should be a number');
+            return false;
+        }
+        var register = {url: $('#url').val(), redirectType: $('#redirectType').val()};
+        $.ajax({
+            url: "/register",
+            method: 'post',
+            dataType: "json",
+            contentType: "application/json",
+            data: JSON.stringify(register),
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(header, token);
+            },
+            success: function (data) {
+                var content = 'shortUrl: ' + data.shortUrl;
+                $('#message').html(content);
+            }
+        })
+    }
+
+    function createAccount() {
+        if (isNaN($('#account').val())) {
+            alert('account should be a number')
+            return false;
+        }
+        var account = {AccountId: $('#account').val()};
+        $.ajax({
+            url: "/account",
+            method: 'post',
+            dataType: "json",
+            contentType: "application/json",
+            data: JSON.stringify(account),
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(header, token);
+            },
+            success: function (data) {
+                if (data.success) {
+                    var content = 'description: ' + data.description + '\n' + 'password: ' + data.password;
+                } else {
+                    var content = 'description: ' + data.description + '\n';
+                }
+                $('#message').html(content);
+            }
+        })
+    }
+
+    function showStatistic() {
+        checkAuthentification('before watching statistik, please login');
+        document.getElementById("showSt").submit();
+    }
+</script>
+</body>
+</html>
