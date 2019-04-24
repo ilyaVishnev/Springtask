@@ -1,6 +1,6 @@
 package com.config;
 
-import com.Entities.Account;
+import com.entity.Account;
 import com.repositories.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;

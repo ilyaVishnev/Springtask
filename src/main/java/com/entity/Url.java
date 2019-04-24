@@ -1,4 +1,4 @@
-package com.Entities;
+package com.entity;
 
 import javax.persistence.*;
 
@@ -70,5 +70,19 @@ public class Url {
 
     public void setAccount(Account account) {
         this.account = account;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null)
+            return false;
+        if (o.getClass() != getClass())
+            return false;
+        Url other = (Url) o;
+        if (this.getUrl().equals(other.getUrl()))
+            return true;
+        return false;
     }
 }

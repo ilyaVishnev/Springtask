@@ -24,7 +24,7 @@
     <textarea id="message" readonly rows="7" cols="17">here're your answers from server</textarea>
     <br/>
     <form th:action="@{/sign}" method="get" style="display: none;margin-top: 2%" id="loginForm">
-        <input type="submit" name="submit" value="Регистрация">
+        <input type="submit" name="submit" value="Регистрация" id="submitLogin">
         <input type="hidden" name="${_csrf.parameterName}"
                value="${_csrf.token}"/>
     </form>
@@ -56,6 +56,7 @@
             document.getElementById('loginForm').style.display = 'block';
             return false;
         }
+        return true;
     }
 
     function formSubmit() {
@@ -78,7 +79,11 @@
                 xhr.setRequestHeader(header, token);
             },
             success: function (data) {
-                var content = 'shortUrl: ' + data.shortUrl;
+                if (data.success) {
+                    var content = 'shortUrl: ' + data.shortUrl;
+                } else {
+                    var content = 'description: ' + data.description + '\n';
+                }
                 $('#message').html(content);
             }
         })
@@ -111,8 +116,11 @@
     }
 
     function showStatistic() {
-        checkAuthentification('before watching statistik, please login');
-        document.getElementById("showSt").submit();
+        if ([[${#request.userPrincipal==null}]]) {
+            document.getElementById("submitLogin").click();
+        } else {
+            document.getElementById("showSt").submit();
+        }
     }
 </script>
 </body>

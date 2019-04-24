@@ -1,4 +1,4 @@
-package com.Controllers;
+package com.controllers;
 
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.security.authentication.LockedException;
@@ -15,7 +15,7 @@ import java.io.IOException;
 public class SignInController {
 
     @RequestMapping("/sign")
-    public ModelAndView gotoAccount(@RequestParam(required = false, value = "error") String error, @RequestParam(required = false, value = "logout") String logout, HttpServletRequest request){
+    public ModelAndView gotoAccount(@RequestParam(required = false, value = "error") String error, @RequestParam(required = false, value = "logout") String logout, HttpServletRequest request) {
         ModelAndView modelAndView = new ModelAndView();
         if (error != null) {
             modelAndView.addObject("error", getErrorMessage(request, "SPRING_SECURITY_LAST_EXCEPTION"));
